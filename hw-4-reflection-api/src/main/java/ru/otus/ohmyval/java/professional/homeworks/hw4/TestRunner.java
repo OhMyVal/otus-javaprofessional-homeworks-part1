@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TestRunner {
     public static void run(Class testSuiteClass) throws MyTestException {
-        if (testSuiteClass.isAnnotationPresent(Disabled.class)){
+        if (testSuiteClass.isAnnotationPresent(Disabled.class)) {
             System.out.println(testSuiteClass.getAnnotation(Disabled.class).toString());
             return;
         }
@@ -15,36 +15,43 @@ public class TestRunner {
         List<Method> testSuitMethods = new ArrayList<>();
         for (Method m : methods) {
             if ((m.isAnnotationPresent(Test.class)) && (m.isAnnotationPresent(BeforeSuite.class))) {
-                throw new MyTestException ("Метод помечен двумя аннотациями: Test и BeforeSuite");
+                throw new MyTestException("Метод помечен двумя аннотациями: Test и BeforeSuite");
             }
             if ((m.isAnnotationPresent(Test.class)) && (m.isAnnotationPresent(AfterSuite.class))) {
-                throw new MyTestException ("Метод помечен двумя аннотациями: Test и AfterSuite");
+                throw new MyTestException("Метод помечен двумя аннотациями: Test и AfterSuite");
             }
             if ((m.isAnnotationPresent(BeforeSuite.class)) && (m.isAnnotationPresent(AfterSuite.class))) {
-                throw new MyTestException ("Метод помечен двумя аннотациями: BeforeSuite и AfterSuite");
+                throw new MyTestException("Метод помечен двумя аннотациями: BeforeSuite и AfterSuite");
+            }
+            if (m.isAnnotationPresent(Disabled.class)) {
+                continue;
             }
             if (m.isAnnotationPresent(Test.class)) {
                 if ((m.getAnnotation(Test.class).priority() < 1) || (m.getAnnotation(Test.class).priority() > 10)) {
-                    throw new MyTestException ("Приоритет вышел за границы допуска");
+                    throw new MyTestException("Приоритет вышел за границы допуска");
                 }
                 testSuitMethods.add(m);
             }
         }
         testSuitMethods.sort((m1, m2) -> m2.getAnnotation(Test.class).priority() - m1.getAnnotation(Test.class).priority());
 //        System.out.println(testSuitMethods);
-        int countBefore = 0;
-        int countAfter = 0;
+        int countBeforeSuite = 0;
+        int countAfterSuite = 0;
         for (Method m : methods) {
+            if (m.isAnnotationPresent(Disabled.class)) {
+                System.out.println(m.getAnnotation(Disabled.class).description());
+                continue;
+            }
             if (m.isAnnotationPresent(BeforeSuite.class)) {
-                countBefore++;
-                if (countBefore > 1) {
+                countBeforeSuite++;
+                if (countBeforeSuite > 1) {
                     throw new MyTestException("Превышено количество аннотаций BeforeSuite");
                 }
                 testSuitMethods.add(0, m);
             } else {
                 if (m.isAnnotationPresent(AfterSuite.class)) {
-                    countAfter++;
-                    if (countAfter > 1) {
+                    countAfterSuite++;
+                    if (countAfterSuite > 1) {
                         throw new MyTestException("Превышено количество аннотаций AfterSuite");
                     }
                     testSuitMethods.add(m);

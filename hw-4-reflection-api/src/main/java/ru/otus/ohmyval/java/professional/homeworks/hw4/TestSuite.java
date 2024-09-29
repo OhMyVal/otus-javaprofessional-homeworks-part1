@@ -7,23 +7,29 @@ public class TestSuite {
         System.out.println("init");
     }
 
-    @Test (priority = 3)
+    @Disabled(description = "Метод test1 отключен")
+    @Test(priority = 3)
     public static void test1() {
         System.out.println(3);
     }
+
     @Test
     public static void test2() {
         System.out.println(5);
     }
+
     @Test
     public static void test3() {
         System.out.println(5);
     }
-    @Test (priority = 4)
+
+    @Test(priority = 4)
+    @Disabled(description = "Метод test4 отключен")
     public static void test4() {
         System.out.println(4);
     }
-    @Test (priority = 10)
+
+    @Test(priority = 10)
     public static void test5() {
         System.out.println(10);
     }
@@ -33,6 +39,7 @@ public class TestSuite {
     }
 
     @AfterSuite
+    @Disabled(description = "Метод endpoint отключен")
     public static void endpoint() {
         System.out.println("endpoint");
     }
