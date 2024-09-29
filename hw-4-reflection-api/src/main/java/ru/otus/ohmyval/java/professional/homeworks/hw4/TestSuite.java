@@ -6,9 +6,29 @@ public class TestSuite {
         System.out.println("init");
     }
 
-    @Test
+    @Test (priority = 3)
     public static void test1() {
         System.out.println(1);
+    }
+    @Test
+    public static void test2() {
+        System.out.println(2);
+    }
+    @Test
+    public static void test3() {
+        System.out.println(3);
+    }
+    @Test (priority = 8)
+    public static void test4() {
+        System.out.println(4);
+    }
+    @Test (priority = 10)
+    public static void test5() {
+        System.out.println(5);
+    }
+
+    public static void notTest() {
+        System.out.println("notTest");
     }
 
     @AfterSuite
