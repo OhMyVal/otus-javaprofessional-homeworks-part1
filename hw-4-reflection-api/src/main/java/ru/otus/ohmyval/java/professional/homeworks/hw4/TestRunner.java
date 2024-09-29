@@ -1,29 +1,63 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw4;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestRunner {
-    public static void run(Class testSuiteClass) {
+    public static void run(Class testSuiteClass) throws MyTestException {
         Method[] methods = testSuiteClass.getDeclaredMethods();
         List<Method> testSuitMethods = new ArrayList<>();
         for (Method m : methods) {
+            if ((m.isAnnotationPresent(Test.class)) && (m.isAnnotationPresent(BeforeSuite.class))) {
+                throw new MyTestException ("Метод помечен двумя аннотациями: Test и BeforeSuite");
+            }
+            if ((m.isAnnotationPresent(Test.class)) && (m.isAnnotationPresent(AfterSuite.class))) {
+                throw new MyTestException ("Метод помечен двумя аннотациями: Test и AfterSuite");
+            }
+            if ((m.isAnnotationPresent(BeforeSuite.class)) && (m.isAnnotationPresent(AfterSuite.class))) {
+                throw new MyTestException ("Метод помечен двумя аннотациями: BeforeSuite и AfterSuite");
+            }
             if (m.isAnnotationPresent(Test.class)) {
+                if ((m.getAnnotation(Test.class).priority() < 1) || (m.getAnnotation(Test.class).priority() > 10)) {
+                    throw new MyTestException ("Приоритет вышел за границы допуска");
+                }
                 testSuitMethods.add(m);
             }
         }
         testSuitMethods.sort((m1, m2) -> m2.getAnnotation(Test.class).priority() - m1.getAnnotation(Test.class).priority());
-              System.out.println(testSuitMethods);
+//        System.out.println(testSuitMethods);
+        int countBefore = 0;
+        int countAfter = 0;
         for (Method m : methods) {
             if (m.isAnnotationPresent(BeforeSuite.class)) {
+                countBefore++;
+                if (countBefore > 1) {
+                    throw new MyTestException("Превышено количество аннотаций BeforeSuite");
+                }
                 testSuitMethods.add(0, m);
-            }
-            if (m.isAnnotationPresent(AfterSuite.class)) {
-                testSuitMethods.add(m);
+            } else {
+                if (m.isAnnotationPresent(AfterSuite.class)) {
+                    countAfter++;
+                    if (countAfter > 1) {
+                        throw new MyTestException("Превышено количество аннотаций AfterSuite");
+                    }
+                    testSuitMethods.add(m);
+                }
             }
         }
-        System.out.println(testSuitMethods);
+        for (Method testSuitMethod : testSuitMethods) {
+            try {
+                testSuitMethod.invoke(null);
+            } catch (IllegalAccessException e) {
+                throw new MyTestException("Нет доступа");
+            } catch (InvocationTargetException e) {
+                throw new MyTestException("Что-то пошло не так");
+            }
+
+        }
+//        System.out.println(testSuitMethods);
     }
 }
 
