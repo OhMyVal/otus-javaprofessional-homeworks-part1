@@ -7,6 +7,10 @@ import java.util.List;
 
 public class TestRunner {
     public static void run(Class testSuiteClass) throws MyTestException {
+        if (testSuiteClass.isAnnotationPresent(Disabled.class)){
+            System.out.println(testSuiteClass.getAnnotation(Disabled.class).toString());
+            return;
+        }
         Method[] methods = testSuiteClass.getDeclaredMethods();
         List<Method> testSuitMethods = new ArrayList<>();
         for (Method m : methods) {

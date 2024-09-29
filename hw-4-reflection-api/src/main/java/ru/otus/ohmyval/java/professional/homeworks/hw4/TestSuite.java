@@ -1,5 +1,6 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw4;
 
+//@Disabled (description = "Класс TestSuite отключен")
 public class TestSuite {
     @BeforeSuite
     public static void init() {
