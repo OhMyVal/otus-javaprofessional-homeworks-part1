@@ -34,7 +34,6 @@ public class TestRunner {
             }
         }
         testSuitMethods.sort((m1, m2) -> m2.getAnnotation(Test.class).priority() - m1.getAnnotation(Test.class).priority());
-//        System.out.println(testSuitMethods);
         int countBeforeSuite = 0;
         int countAfterSuite = 0;
         for (Method m : methods) {
@@ -58,17 +57,23 @@ public class TestRunner {
                 }
             }
         }
+        int countFailedTests = 0;
         for (Method testSuitMethod : testSuitMethods) {
             try {
                 testSuitMethod.invoke(null);
             } catch (IllegalAccessException e) {
-                throw new MyTestException("Нет доступа");
+                countFailedTests++;
+                System.out.println("Тест " + testSuitMethod.getName() + ", приоритет " + testSuitMethod.getAnnotation(Test.class).priority() + ", упал");
+                e.printStackTrace();
+//               throw new MyTestException("Нет доступа");
             } catch (InvocationTargetException e) {
-                throw new MyTestException("Что-то пошло не так");
+                countFailedTests++;
+                System.out.println("Тест " + testSuitMethod.getName() + ", приоритет " + testSuitMethod.getAnnotation(Test.class).priority() + ", упал");
+                e.printStackTrace();
+//                throw new MyTestException("Что-то пошло не так");
             }
-
         }
-//        System.out.println(testSuitMethods);
+        System.out.println("Всего тестов: " + testSuitMethods.size() + "; Прошло успешно: " + (testSuitMethods.size() - countFailedTests) + "; Упало: " + countFailedTests);
     }
 }
 

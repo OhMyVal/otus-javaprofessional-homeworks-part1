@@ -10,28 +10,28 @@ public class TestSuite {
     @Disabled(description = "Метод test1 отключен")
     @Test(priority = 3)
     public static void test1() {
-        System.out.println(3);
+        System.out.println("Priority: " + 3 + "; " + "test1");
     }
 
     @Test
     public static void test2() {
-        System.out.println(5);
+        System.out.println("Priority: " + 5 + "; " + "test2");
     }
 
     @Test
     public static void test3() {
-        System.out.println(5);
+        System.out.println("Priority: " + 5 + "; " + "test3");
     }
 
-    @Test(priority = 4)
-    @Disabled(description = "Метод test4 отключен")
+    @Test(priority = 2)
+//    @Disabled(description = "Метод test4 отключен")
     public static void test4() {
-        System.out.println(4);
+        System.out.println("Priority: " + 2 + "; " + "test4");
     }
 
     @Test(priority = 10)
     public static void test5() {
-        System.out.println(10);
+        System.out.println("Priority: " + 10 + "; " + "test5");
     }
 
     public static void notTest() {
@@ -39,8 +39,25 @@ public class TestSuite {
     }
 
     @AfterSuite
-    @Disabled(description = "Метод endpoint отключен")
+//    @Disabled(description = "Метод endpoint отключен")
     public static void endpoint() {
         System.out.println("endpoint");
     }
+
+    @Test(priority = 4)
+    public static void test6() {
+        int a = 0;
+        int b = 10;
+        int result = b / a;
+        System.out.println(result + "; " + "Priority: " + 4 + "test6");
+    }
+
+    @Test(priority = 9)
+    public static void test7() {
+        int a = 0;
+        int b = 33;
+        int result = b / a;
+        System.out.println(result + "; " + "Priority: " + 9 + "test7");
+    }
+
 }
