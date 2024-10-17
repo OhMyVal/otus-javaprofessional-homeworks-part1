@@ -62,15 +62,13 @@ public class TestRunner {
             try {
                 testSuitMethod.invoke(null);
             } catch (IllegalAccessException e) {
-                countFailedTests++;
                 System.out.println("Тест " + testSuitMethod.getName() + ", приоритет " + testSuitMethod.getAnnotation(Test.class).priority() + ", упал");
                 e.printStackTrace();
-//               throw new MyTestException("Нет доступа");
+                throw new MyTestException("Нет доступа");
             } catch (InvocationTargetException e) {
                 countFailedTests++;
                 System.out.println("Тест " + testSuitMethod.getName() + ", приоритет " + testSuitMethod.getAnnotation(Test.class).priority() + ", упал");
                 e.printStackTrace();
-//                throw new MyTestException("Что-то пошло не так");
             }
         }
         System.out.println("Всего тестов: " + testSuitMethods.size() + "; Прошло успешно: " + (testSuitMethods.size() - countFailedTests) + "; Упало: " + countFailedTests);

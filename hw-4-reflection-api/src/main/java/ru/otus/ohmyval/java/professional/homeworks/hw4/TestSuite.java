@@ -54,10 +54,8 @@ public class TestSuite {
 
     @Test(priority = 9)
     public static void test7() {
-        int a = 0;
-        int b = 33;
-        int result = b / a;
-        System.out.println(result + "; " + "Priority: " + 9 + "test7");
+        int[] arr = {1, 3, 6};
+        System.out.println(arr[7] + "; " + "Priority: " + 9 + "test7");
     }
 
 }
