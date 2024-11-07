@@ -25,12 +25,12 @@ public class TaskApplication {
 
         @Getter
         @Setter
-        Status status;
+        private Status status;
 
         @Getter
         private String parity;
 
-        public void setParity() {
+        private void setParity() {
             if (id % 2 == 0) {
                 this.parity = "Even";
             } else {
@@ -48,7 +48,7 @@ public class TaskApplication {
         }
     }
 
-    Stream<MyTask> getMyTaskStream() {
+    private Stream<MyTask> getMyTaskStream() {
         return Stream.of(
                 MyTask.builder()
                         .id(1)
