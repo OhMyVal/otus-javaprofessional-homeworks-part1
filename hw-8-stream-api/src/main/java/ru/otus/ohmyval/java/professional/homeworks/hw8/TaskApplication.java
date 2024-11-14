@@ -27,15 +27,10 @@ public class TaskApplication {
         @Setter
         private Status status;
 
-        @Getter
-        private String parity;
-
-        private void setParity() {
-            if (id % 2 == 0) {
-                this.parity = "Even";
-            } else {
-                this.parity = "Odd";
-            }
+        public String getParity() {
+            return id % 2 == 0 ? "Even" : "Odd";
+//            if (id % 2 == 0) return "Even";
+//            return "Odd";
         }
 
         @Override
@@ -48,7 +43,7 @@ public class TaskApplication {
         }
     }
 
-    private Stream<MyTask> getMyTaskStream() {
+    private Stream<MyTask> getTaskStream() {
         return Stream.of(
                 MyTask.builder()
                         .id(1)
@@ -84,45 +79,49 @@ public class TaskApplication {
         );
     }
 
-    List<MyTask> myTaskList = getMyTaskStream().toList();
+    List<MyTask> taskList = getTaskStream().toList();
 
-    public List<MyTask> myTasksInWork() {
-        return myTaskList.stream()
+    public List<MyTask> tasksInWork() {
+        return taskList.stream()
                 .filter(myTask -> myTask.status.equals(Status.INWORK))
                 .toList();
     }
 
     public Long closedTasksQuantity() {
-        return myTaskList.stream()
+        return taskList.stream()
                 .filter(myTask -> myTask.status.equals(Status.CLOSED))
                 .count();
     }
 
     public List<Boolean> ifTaskExist() {
-        boolean taskId2Exist = myTaskList.stream()
+        boolean taskId2Exist = taskList.stream()
                 .anyMatch(myTask -> myTask.getId() == 2);
-        boolean taskId99NotExist = myTaskList.stream()
+        boolean taskId99NotExist = taskList.stream()
                 .noneMatch(myTask -> myTask.getId() == 99);
         return Arrays.asList(taskId2Exist, taskId99NotExist);
     }
 
-    public List<TaskApplication.MyTask> myTaskSortedList() {
-        return myTaskList.stream()
-                .sorted(Comparator.comparing(myTask -> myTask.status))
+    public List<MyTask> taskSortedList() {
+        return taskList.stream()
+//                .sorted(Comparator.comparing(MyTask::getStatus))
+                .sorted(new Comparator<MyTask>() {
+                    @Override
+                    public int compare(MyTask o1, MyTask o2) {
+                        return 0;
+                    }
+                })
                 .toList();
     }
 
     public Map<Status, Map<String, List<MyTask>>> tasksGroupedByStatusAndId() {
-        return myTaskList.stream()
-                .collect(Collectors.groupingBy(TaskApplication.MyTask::getStatus,
-                        Collectors.groupingBy(myTask -> {
-                            myTask.setParity();
-                            return myTask.getParity();
-                        })));
+        return taskList.stream()
+                .collect(Collectors.groupingBy(MyTask::getStatus,
+                        Collectors.groupingBy(MyTask::getParity)));
     }
 
-    public Map<Boolean, List<TaskApplication.MyTask>> tasksDividedByStatus() {
-        return myTaskList.stream()
+
+    public Map<Boolean, List<MyTask>> tasksDividedByStatus() {
+        return taskList.stream()
                 .collect(Collectors.partitioningBy(myTask -> myTask.status.equals(Status.CLOSED)));
     }
 

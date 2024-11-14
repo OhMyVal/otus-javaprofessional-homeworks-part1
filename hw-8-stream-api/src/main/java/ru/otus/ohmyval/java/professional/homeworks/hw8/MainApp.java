@@ -6,11 +6,11 @@ public class MainApp {
 
         TaskApplication taskApp = new TaskApplication();
 
-        System.out.println("myTaskList: " + taskApp.myTaskList);
-        System.out.println("myTasksInWork: " + taskApp.myTasksInWork());
+        System.out.println("taskList: " + taskApp.taskList);
+        System.out.println("tasksInWork: " + taskApp.tasksInWork());
         System.out.println("closedTasksQuantity: " + taskApp.closedTasksQuantity());
         System.out.println("ifTaskExist: " + taskApp.ifTaskExist());
-        System.out.println("myTaskSortedList: " + taskApp.myTaskSortedList());
+        System.out.println("taskSortedList: " + taskApp.taskSortedList());
         System.out.println("tasksGroupedByStatusAndId: " + taskApp.tasksGroupedByStatusAndId());
         System.out.println("tasksDividedByStatus: " + taskApp.tasksDividedByStatus());
     }
