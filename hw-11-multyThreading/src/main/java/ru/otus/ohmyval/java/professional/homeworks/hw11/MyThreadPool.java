@@ -9,19 +9,30 @@ public class MyThreadPool {
     public int getNumThreads() {
         return numThreads;
     }
-    BlockingQueue<ThreadPoolTask> taskQueue = new ArrayBlockingQueue<>(5000);
+
+    BlockingQueue<ThreadPoolTask> queue = new ArrayBlockingQueue<>(5000);
+
     public MyThreadPool(int numThreads) {
         this.numThreads = numThreads;
-
-            for (int i = 0; i < numThreads; i++) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println(Thread.currentThread().getName());
+        for (int i = 0; i < numThreads; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        while (true) {
+                            Thread.sleep(10);
+                            ThreadPoolTask task = queue.take();
+                            System.out.println(Thread.currentThread().getName());
+                        }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                }).start();
 
-            }
+
+                }
+            }).start();
+
         }
+    }
 
 }
