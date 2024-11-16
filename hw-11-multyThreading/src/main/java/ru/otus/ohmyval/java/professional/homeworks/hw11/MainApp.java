@@ -12,13 +12,9 @@ public class MainApp {
 
         myThreadPool.execute(new ThreadPoolTask(3000));
 
-        myThreadPool.shutdown();
-//        if (myThreadPool.execute(new ThreadPoolTask(5000))){
-//            throw new IllegalStateException();
-//        }
-//        myThreadPool.execute(new ThreadPoolTask(5000));
+        myThreadPool.shutdown(new ThreadPoolTask(5000));
 
-
+        myThreadPool.execute(new ThreadPoolTask(7000));
 
         System.out.println(myThreadPool.getNumThreads());
     }
