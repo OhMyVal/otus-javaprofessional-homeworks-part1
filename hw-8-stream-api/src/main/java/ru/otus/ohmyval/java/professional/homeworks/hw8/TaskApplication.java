@@ -104,12 +104,10 @@ public class TaskApplication {
     public List<MyTask> taskSortedList() {
         return taskList.stream()
 //                .sorted(Comparator.comparing(MyTask::getStatus))
-                .sorted(new Comparator<MyTask>() {
-                    @Override
-                    public int compare(MyTask o1, MyTask o2) {
-                        return 0;
-                    }
-                })
+//                .sorted(Comparator.comparingInt(myTask -> myTask.status.ordinal()))
+                .sorted(Comparator.comparing(myTask -> myTask.status == Status.OPENED))
+                .sorted(Comparator.comparing(myTask -> myTask.status == Status.INWORK))
+                .sorted(Comparator.comparing(myTask -> myTask.status == Status.CLOSED))
                 .toList();
     }
 
