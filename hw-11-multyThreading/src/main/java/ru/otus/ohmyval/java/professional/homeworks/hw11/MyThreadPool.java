@@ -1,6 +1,8 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw11;
 
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +16,9 @@ public class MyThreadPool {
         return numThreads;
     }
 
-    BlockingQueue<ThreadPoolTask> queue = new ArrayBlockingQueue<>(5000);
+//    BlockingQueue<ThreadPoolTask> queue = new ArrayBlockingQueue<>(5000);
+
+    LinkedList<ThreadPoolTask> list = new LinkedList<>();
 
 
     public MyThreadPool(int numThreads) {
@@ -26,7 +30,8 @@ public class MyThreadPool {
                     try {
                         while (!shutdown) {
                             Thread.sleep(10);
-                            ThreadPoolTask task = queue.poll(10000, TimeUnit.MILLISECONDS);
+//                            ThreadPoolTask task = queue.poll(10000, TimeUnit.MILLISECONDS);
+                            ThreadPoolTask task = list.poll();
                             if (task != null) {
                                 System.out.println(Thread.currentThread().getName() + " " + task.doWork());
                             }
@@ -39,15 +44,16 @@ public class MyThreadPool {
         }
     }
 
-    public Boolean execute(ThreadPoolTask threadPoolTask) {
-        queue.add(threadPoolTask);
-        return true;
-    }
-
-    public void shutdown(ThreadPoolTask threadPoolTask) {
-        shutdown = true;
-        if (queue.add(threadPoolTask)) {
+    public void execute(ThreadPoolTask threadPoolTask) {
+        if (!shutdown) {
+            list.offer(threadPoolTask);
+//            queue.add(threadPoolTask);
+        } else {
             throw new IllegalStateException();
         }
+    }
+
+    public void shutdown() {
+        shutdown = true;
     }
 }

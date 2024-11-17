@@ -12,9 +12,9 @@ public class MainApp {
 
         myThreadPool.execute(new ThreadPoolTask(3000));
 
-        myThreadPool.shutdown(new ThreadPoolTask(5000));
+        myThreadPool.shutdown();
 
-        myThreadPool.execute(new ThreadPoolTask(7000));
+//        myThreadPool.execute(new ThreadPoolTask(7000));
 
         System.out.println(myThreadPool.getNumThreads());
     }
