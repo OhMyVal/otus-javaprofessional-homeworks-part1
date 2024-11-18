@@ -2,10 +2,8 @@ package ru.otus.ohmyval.java.professional.homeworks.hw11;
 
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MyThreadPool {
     private int numThreads;
@@ -16,9 +14,8 @@ public class MyThreadPool {
         return numThreads;
     }
 
-//    BlockingQueue<ThreadPoolTask> queue = new ArrayBlockingQueue<>(5000);
-
-    LinkedList<ThreadPoolTask> list = new LinkedList<>();
+    private ReentrantLock reentrantLock = new ReentrantLock();
+    private LinkedList<ThreadPoolTask> list = new LinkedList<>();
 
 
     public MyThreadPool(int numThreads) {
@@ -30,11 +27,12 @@ public class MyThreadPool {
                     try {
                         while (!shutdown) {
                             Thread.sleep(10);
-//                            ThreadPoolTask task = queue.poll(10000, TimeUnit.MILLISECONDS);
+                            reentrantLock.tryLock(10000, TimeUnit.MILLISECONDS);
                             ThreadPoolTask task = list.poll();
                             if (task != null) {
                                 System.out.println(Thread.currentThread().getName() + " " + task.doWork());
                             }
+                            reentrantLock.unlock();
                         }
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -47,7 +45,6 @@ public class MyThreadPool {
     public void execute(ThreadPoolTask threadPoolTask) {
         if (!shutdown) {
             list.offer(threadPoolTask);
-//            queue.add(threadPoolTask);
         } else {
             throw new IllegalStateException();
         }
