@@ -3,7 +3,9 @@ package ru.otus.ohmyval.java.professional.homeworks.hw11;
 public class MainApp {
     public static void main(String[] args) throws InterruptedException {
 
-        MyThreadPool myThreadPool = new MyThreadPool(4);
+        Object obj = new Object();
+
+        MyThreadPool myThreadPool = new MyThreadPool(4, obj);
 
         for (int i = 0; i < 100; i++) {
             myThreadPool.execute(new ThreadPoolTask(i));
