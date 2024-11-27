@@ -10,7 +10,6 @@ public class MainApp {
         for (int i = 0; i < 100; i++) {
             myThreadPool.execute(new ThreadPoolTask(i));
         }
-        Thread.sleep(10000);
 
         myThreadPool.execute(new ThreadPoolTask(3000));
 
