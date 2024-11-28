@@ -102,12 +102,18 @@ public class TaskApplication {
     }
 
     public List<MyTask> taskSortedList() {
+        List<Status> statusOrder = List.of(Status.OPENED, Status.INWORK, Status.CLOSED);
+        Comparator<MyTask> statusComparator = Comparator
+                .comparingInt(task -> statusOrder.indexOf(task.getStatus()));
         return taskList.stream()
-//                .sorted(Comparator.comparing(MyTask::getStatus))
-//                .sorted(Comparator.comparingInt(myTask -> myTask.status.ordinal()))
-                .sorted(Comparator.comparing(myTask -> myTask.status == Status.OPENED))
-                .sorted(Comparator.comparing(myTask -> myTask.status == Status.INWORK))
-                .sorted(Comparator.comparing(myTask -> myTask.status == Status.CLOSED))
+                .sorted(statusComparator)
+                .toList();
+    }
+
+    public List<MyTask> taskSortedList2() {
+        return taskList.stream()
+                .sorted(Comparator.comparing(MyTask::getStatus)) // тут сортируется по тому, как статусы объявлены в Enum
+//                .sorted(Comparator.comparingInt(myTask -> myTask.status.ordinal()))  // здесь тоже, но с использованием метода ordinal() в Enum, результат такой же
                 .toList();
     }
 
