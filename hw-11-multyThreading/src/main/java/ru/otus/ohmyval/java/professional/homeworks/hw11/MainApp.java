@@ -1,7 +1,7 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw11;
 
 public class MainApp {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         Object obj = new Object();
 
@@ -13,7 +13,7 @@ public class MainApp {
 
         myThreadPool.execute(new ThreadPoolTask(3000));
 
-        Thread.sleep(10000);
+
         myThreadPool.shutdown();
 
 //        myThreadPool.execute(new ThreadPoolTask(7000));
