@@ -13,6 +13,7 @@ public class MainApp {
 
         myThreadPool.execute(new ThreadPoolTask(3000));
 
+        Thread.sleep(10000);
         myThreadPool.shutdown();
 
 //        myThreadPool.execute(new ThreadPoolTask(7000));
