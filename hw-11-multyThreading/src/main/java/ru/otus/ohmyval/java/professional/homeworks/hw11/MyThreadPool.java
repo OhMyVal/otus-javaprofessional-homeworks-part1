@@ -8,6 +8,7 @@ public class MyThreadPool {
 
     private Boolean shutdown = false;
     private Object monitor;
+    private ThreadPoolTask task;
 
     public int getNumThreads() {
         return numThreads;
@@ -26,13 +27,13 @@ public class MyThreadPool {
                     try {
                         while (!shutdown) {
                             synchronized (monitor) {
-                                ThreadPoolTask task = list.poll();
+                                task = list.poll();
                                 if (task == null) {
-                                    monitor.wait(100);
-                                } else {
-                                    monitor.notify();
-                                    System.out.println(Thread.currentThread().getName() + " " + task.doWork());
+                                    monitor.wait();
                                 }
+                            }
+                            if (task != null) {
+                                System.out.println(Thread.currentThread().getName() + " " + task.doWork());
                             }
                         }
                     } catch (InterruptedException e) {
@@ -47,6 +48,7 @@ public class MyThreadPool {
         if (!shutdown) {
             synchronized (monitor) {
                 list.offer(threadPoolTask);
+                monitor.notify();
             }
         } else {
             throw new IllegalStateException();
