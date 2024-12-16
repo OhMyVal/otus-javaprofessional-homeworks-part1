@@ -1,27 +1,73 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw15;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-public final class Box {
-    private final Matryoshka red;        // "red0", "red1", ..., "red9"
-    private final Matryoshka green;
-    private final Matryoshka blue;
-    private final Matryoshka magenta;
+public class Box {
+    private Matryoshka red = new Matryoshka(List.of("red0", "red1", "red2", "red3", "red4", "red5", "red6", "red7", "red8", "red9"));
+    private Matryoshka green = new Matryoshka(List.of("green0", "green1", "green2", "green3", "green4", "green5", "green6", "green7", "green8", "green9"));
+    private Matryoshka blue = new Matryoshka(List.of("blue0", "blue1", "blue2", "blue3", "blue4", "blue5", "blue6", "blue7", "blue8", "blue9"));
+    private Matryoshka magenta = new Matryoshka(List.of("magenta0", "magenta1", "magenta2", "magenta3", "magenta4", "magenta5", "magenta6", "magenta7", "magenta8", "magenta9"));
+    private List<Iterator<String>> iteratorList = new ArrayList<>();
 
-    public Box(Matryoshka red, Matryoshka green, Matryoshka blue, Matryoshka magenta) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.magenta = magenta;
+    public void fillIteratorList() {
+        iteratorList.add(red.getItems().iterator());
+        iteratorList.add(green.getItems().iterator());
+        iteratorList.add(blue.getItems().iterator());
+        iteratorList.add(magenta.getItems().iterator());
     }
 
-    // expected: "red0", "green0", "blue0", "magenta0", "red1", "green1", "blue1", "magenta1",...
-    public Iterator<String> getSmallFirstIterator() {
-        // TODO
-    }
+    int sumOfElements = red.getItems().size() + green.getItems().size() + blue.getItems().size() + magenta.getItems().size();
 
-    // expected: "red0", "red1", ..., "red9", "green0", "green1", ..., "green9", ...
-    public Iterator<String> getColorFirstIterator() {
-        // TODO
-    }
+    public Iterator<String> GET_SMALL_FIRST = new Iterator<>() {
+
+        int ctr = -1;
+        int countAllElements = 0;
+
+        @Override
+        public boolean hasNext() {
+            while (countAllElements < sumOfElements) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String next() {
+            if (ctr >= (iteratorList.size() - 1)) {
+                ctr = -1;
+            }
+            ctr++;
+            countAllElements++;
+            return iteratorList.get(ctr).next();
+        }
+    };
+
+
+    public final Iterator<String> GET_COLOR_FIRST = new Iterator<String>() {
+
+        int ctr = -1;
+        int i = 0;
+        int countAllElements = 0;
+
+        @Override
+        public boolean hasNext() {
+            while (countAllElements < sumOfElements) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String next() {
+            if (ctr >= (red.getItems().size() - 1)) {
+                ctr = -1;
+                i++;
+            }
+            ctr++;
+            countAllElements++;
+            return iteratorList.get(i).next();
+        }
+    };
 }
