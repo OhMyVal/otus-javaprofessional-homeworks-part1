@@ -5,12 +5,8 @@ import java.util.Iterator;
 public class MainApp {
     public static void main(String[] args) {
         Box box = new Box();
-        box.fillIteratorList();
-        printElements(box.GET_SMALL_FIRST);
-        printElements(box.GET_COLOR_FIRST);
-
-        System.out.println(box.sumOfElements);
-
+        printElements(box.getColorFirstIterator());
+        printElements(box.getSmallFirstIterator());
     }
 
     private static void printElements(Iterator<String> it) {

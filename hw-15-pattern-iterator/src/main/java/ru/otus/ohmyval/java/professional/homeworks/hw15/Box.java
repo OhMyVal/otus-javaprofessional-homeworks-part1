@@ -9,65 +9,78 @@ public class Box {
     private Matryoshka green = new Matryoshka(List.of("green0", "green1", "green2", "green3", "green4", "green5", "green6", "green7", "green8", "green9"));
     private Matryoshka blue = new Matryoshka(List.of("blue0", "blue1", "blue2", "blue3", "blue4", "blue5", "blue6", "blue7", "blue8", "blue9"));
     private Matryoshka magenta = new Matryoshka(List.of("magenta0", "magenta1", "magenta2", "magenta3", "magenta4", "magenta5", "magenta6", "magenta7", "magenta8", "magenta9"));
-    private List<Iterator<String>> iteratorList = new ArrayList<>();
 
-    public void fillIteratorList() {
+    public Iterator<String> getSmallFirstIterator() {
+
+        List<Iterator<String>> iteratorList = new ArrayList<>();
+
         iteratorList.add(red.getItems().iterator());
         iteratorList.add(green.getItems().iterator());
         iteratorList.add(blue.getItems().iterator());
         iteratorList.add(magenta.getItems().iterator());
+
+        Iterator<String> GET_SMALL_FIRST = new Iterator<>() {
+
+            int ctr = -1;
+            int countAllElements = 0;
+            int sumOfElements = red.getItems().size() + green.getItems().size() + blue.getItems().size() + magenta.getItems().size();
+
+            @Override
+            public boolean hasNext() {
+                while (countAllElements < sumOfElements) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public String next() {
+                if (ctr >= (iteratorList.size() - 1)) {
+                    ctr = -1;
+                }
+                ctr++;
+                countAllElements++;
+                return iteratorList.get(ctr).next();
+            }
+        };
+        return GET_SMALL_FIRST;
     }
 
-    int sumOfElements = red.getItems().size() + green.getItems().size() + blue.getItems().size() + magenta.getItems().size();
+    public Iterator<String> getColorFirstIterator() {
 
-    public Iterator<String> GET_SMALL_FIRST = new Iterator<>() {
+        List<Iterator<String>> iteratorList = new ArrayList<>();
 
-        int ctr = -1;
-        int countAllElements = 0;
+        iteratorList.add(red.getItems().iterator());
+        iteratorList.add(green.getItems().iterator());
+        iteratorList.add(blue.getItems().iterator());
+        iteratorList.add(magenta.getItems().iterator());
 
-        @Override
-        public boolean hasNext() {
-            while (countAllElements < sumOfElements) {
-                return true;
+        Iterator<String> GET_COLOR_FIRST = new Iterator<>() {
+
+            int ctr = -1;
+            int i = 0;
+            int countAllElements = 0;
+            int sumOfElements = red.getItems().size() + green.getItems().size() + blue.getItems().size() + magenta.getItems().size();
+
+            @Override
+            public boolean hasNext() {
+                while (countAllElements < sumOfElements) {
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
 
-        @Override
-        public String next() {
-            if (ctr >= (iteratorList.size() - 1)) {
-                ctr = -1;
+            @Override
+            public String next() {
+                if (ctr >= (red.getItems().size() - 1)) {
+                    ctr = -1;
+                    i++;
+                }
+                ctr++;
+                countAllElements++;
+                return iteratorList.get(i).next();
             }
-            ctr++;
-            countAllElements++;
-            return iteratorList.get(ctr).next();
-        }
-    };
-
-
-    public final Iterator<String> GET_COLOR_FIRST = new Iterator<String>() {
-
-        int ctr = -1;
-        int i = 0;
-        int countAllElements = 0;
-
-        @Override
-        public boolean hasNext() {
-            while (countAllElements < sumOfElements) {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public String next() {
-            if (ctr >= (red.getItems().size() - 1)) {
-                ctr = -1;
-                i++;
-            }
-            ctr++;
-            countAllElements++;
-            return iteratorList.get(i).next();
-        }
-    };
+        };
+        return GET_COLOR_FIRST;
+    }
 }
