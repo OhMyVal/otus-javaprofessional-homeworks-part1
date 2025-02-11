@@ -21,26 +21,23 @@ public class Box {
 
         Iterator<String> GET_SMALL_FIRST = new Iterator<>() {
 
-            int ctr = -1;
+            int currentIteratorIndex = -1;
             int countAllElements = 0;
             int sumOfElements = red.getItems().size() + green.getItems().size() + blue.getItems().size() + magenta.getItems().size();
 
             @Override
             public boolean hasNext() {
-                while (countAllElements < sumOfElements) {
-                    return true;
-                }
-                return false;
+                return countAllElements < sumOfElements;
             }
 
             @Override
             public String next() {
-                if (ctr >= (iteratorList.size() - 1)) {
-                    ctr = -1;
+                if (currentIteratorIndex >= (iteratorList.size() - 1)) {
+                    currentIteratorIndex = -1;
                 }
-                ctr++;
+                currentIteratorIndex++;
                 countAllElements++;
-                return iteratorList.get(ctr).next();
+                return iteratorList.get(currentIteratorIndex).next();
             }
         };
         return GET_SMALL_FIRST;
@@ -57,26 +54,23 @@ public class Box {
 
         Iterator<String> GET_COLOR_FIRST = new Iterator<>() {
 
-            int ctr = -1;
+            int currentIteratorIndex = -1;
             int i = 0;
             int countAllElements = 0;
             int sumOfElements = red.getItems().size() + green.getItems().size() + blue.getItems().size() + magenta.getItems().size();
 
             @Override
             public boolean hasNext() {
-                while (countAllElements < sumOfElements) {
-                    return true;
-                }
-                return false;
+                return countAllElements < sumOfElements;
             }
 
             @Override
             public String next() {
-                if (ctr >= (red.getItems().size() - 1)) {
-                    ctr = -1;
+                if (currentIteratorIndex >= (red.getItems().size() - 1)) {
+                    currentIteratorIndex = -1;
                     i++;
                 }
-                ctr++;
+                currentIteratorIndex++;
                 countAllElements++;
                 return iteratorList.get(i).next();
             }
