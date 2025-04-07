@@ -28,7 +28,9 @@ public class UsersDao {
 
     public Optional<User> getUserByLoginAndPassword(String login, String password) {
         try (ResultSet rs = dataSource.getStatement().executeQuery("select * from users where login = '" + login + "' AND password = '" + password + "'")) {
-            return Optional.of(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
+            if (rs.next() != false) {
+                return Optional.of(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
