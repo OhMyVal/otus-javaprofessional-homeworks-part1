@@ -11,7 +11,10 @@ public class MockChatServer {
             dataSource.connect();
 
             UsersDao usersDao = new UsersDao(dataSource);
-            usersDao.init();
+
+            DbMigrator dbMigrator = new DbMigrator(dataSource);
+            dbMigrator.migrate("dbinit.sql");
+
             System.out.println(usersDao.getAllUsers());
 //            usersDao.save(new User(null, "A", "A", "A"));
 //            System.out.println(usersDao.getAllUsers());
@@ -22,7 +25,6 @@ public class MockChatServer {
 //            AuthenticationService authenticationService = new AuthenticationService(usersDao);
 //            UsersStatisticService usersStatisticService = new UsersStatisticService(usersDao);
 //            BonusService bonusService = new BonusService(dataSource);
-//            bonusService.init();
 
 //            authenticationService.register("A", "A", "A");
             // Основная работа сервера чата
