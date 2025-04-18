@@ -15,6 +15,7 @@ public class AbstractRepository<T> {
     private DataSource dataSource;
     private PreparedStatement psInsert;
     private PreparedStatement psSelectId;
+    private PreparedStatement psSelectAll;
     private List<Field> cachedFieldsNoId;
     private List<Field> allCachedFields;
     private Field idField;
@@ -24,6 +25,7 @@ public class AbstractRepository<T> {
         this.dataSource = dataSource;
         this.prepareInsert(cls);
         this.prepareSelectId(cls);
+        this.prepareSelectAll(cls);
     }
 
     public void save(T entity) {
@@ -112,9 +114,33 @@ public class AbstractRepository<T> {
             return Optional.of(entity);
         } catch (SQLException e) {
             e.printStackTrace();
-
         }
         return Optional.empty();
+    }
+
+    public List<User> getAllUsers() {
+        List<User> result = new ArrayList<>();
+        try (ResultSet rs = dataSource.getStatement().executeQuery("select * from users")) {
+            while (rs.next() != false) {
+                result.add(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    public List<T> findAll() {
+        List<T> result = new ArrayList<>();
+        try {
+            ResultSet rs = psSelectId.executeQuery();
+            while (rs.next() != false) {
+                result.add(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Collections.unmodifiableList(result);
     }
 
     private void prepareSelectId(Class cls) {
@@ -149,6 +175,21 @@ public class AbstractRepository<T> {
             psSelectId = dataSource.getConnection().prepareStatement(query.toString());
         } catch (SQLException e) {
             throw new ORMException("Не удалось выполнить выборку по id для класса " + cls.getName());
+        }
+    }
+
+    private void prepareSelectAll(Class cls) {
+        if (!cls.isAnnotationPresent(RepositoryTable.class)) {
+            throw new ORMException("Класс не предназначен для работы с репозиторием, не хватает аннотации @RepositoryTable");
+        }
+        String tableName = ((RepositoryTable) cls.getAnnotation(RepositoryTable.class)).title();
+        StringBuilder query = new StringBuilder("select * from ");
+        query.append(tableName);
+        // 'select * from users'
+        try {
+            psSelectAll = dataSource.getConnection().prepareStatement(query.toString());
+        } catch (SQLException e) {
+            throw new ORMException("Не удалось выполнить всю выборку для класса " + cls.getName());
         }
     }
 
