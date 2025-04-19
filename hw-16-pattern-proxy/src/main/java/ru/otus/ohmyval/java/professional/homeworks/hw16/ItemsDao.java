@@ -28,4 +28,8 @@ public class ItemsDao {
         }
         return Collections.unmodifiableList(result);
     }
+
+    public void updatePrice(Item item) throws SQLException {
+        dataSourceSingleton.getStatement().executeUpdate(String.format("update items set price =  price * 2 where id = " + item.getId()));
+    }
 }
