@@ -16,16 +16,18 @@ public class AbstractRepository<T> {
     private PreparedStatement psInsert;
     private PreparedStatement psSelectId;
     private PreparedStatement psSelectAll;
+    private PreparedStatement psUpdate;
     private List<Field> cachedFieldsNoId;
     private List<Field> allCachedFields;
     private Field idField;
-    private Map<Field, Object> allCachedFieldsValue = new HashMap<>();
+//    private Map<Field, Object> allCachedFieldsValue = new HashMap<>();
 
     public AbstractRepository(DataSource dataSource, Class<T> cls) {
         this.dataSource = dataSource;
         this.prepareInsert(cls);
         this.prepareSelectId(cls);
         this.prepareSelectAll(cls);
+//        this.prepareUpdate(cls);
     }
 
     public void save(T entity) {
@@ -39,17 +41,46 @@ public class AbstractRepository<T> {
         }
     }
 
-//    public T create(Class<T> cls) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-//        Constructor<T> constructor = null;
-//        T entity = null;
-//        for (int i = 0; i < cachedFieldsNoId.size(); i++) {
-//            constructor = cls.getDeclaredConstructor(cachedFieldsNoId.get(i).getClass());
-//        }
-//        for (int i = 0; i < allCachedFieldsValue.size(); i++) {
-//            entity = constructor.newInstance(allCachedFieldsValue.get(cachedFieldsNoId.get(i)));
-//        }
-//        return entity;
-//    }
+    public Optional<T> findById(Long id, Class<T> cls) {
+        try {
+            Constructor<T> constructor = cls.getDeclaredConstructor();
+            T entity = constructor.newInstance();
+            int paramPosition = 1;
+            psSelectId.setString(paramPosition, String.valueOf(id));
+            ResultSet rs = psSelectId.executeQuery();
+            if (rs.next() != false) {
+                for (int i = 0; i < allCachedFields.size(); i++) {
+                    allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
+//                    allCachedFieldsValue.put(allCachedFields.get(i), rs.getObject(allCachedFields.get(i).getName()));
+                }
+            }
+//            for (int i = 0; i < allCachedFields.size(); i++) {
+//                allCachedFields.get(i).set(entity,allCachedFieldsValue.get(allCachedFields.get(i)));
+//            }
+            return Optional.of(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public List<T> findAll(Class<T> cls) {
+        List<T> result = new ArrayList<>();
+        try {
+            Constructor<T> constructor = cls.getDeclaredConstructor();
+            T entity = constructor.newInstance();
+            ResultSet rs = psSelectAll.executeQuery();
+            while (rs.next() != false) {
+            for (int i = 0; i < allCachedFields.size(); i++) {
+                    allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
+                }
+                result.add(entity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Collections.unmodifiableList(result);
+    }
 
     private void prepareInsert(Class cls) {
         if (!cls.isAnnotationPresent(RepositoryTable.class)) {
@@ -85,64 +116,6 @@ public class AbstractRepository<T> {
             throw new ORMException("Не удалось проинициализировать репозиторий для класса " + cls.getName());
         }
     }
-
-    public Optional<User> getUserById(Long id) {
-        try (ResultSet rs = dataSource.getStatement().executeQuery("select * from users where id = " + id)) {
-            if (rs.next() != false) {
-                return Optional.of(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
-
-    public Optional<T> findById(Long id) {
-        try {
-            T entity = null;
-            int paramPosition = 1;
-            psSelectId.setString(paramPosition, String.valueOf(id));
-            ResultSet rs = psSelectId.executeQuery();
-            if (rs.next() != false) {
-                for (int i = 0; i < allCachedFields.size(); i++) {
-                    allCachedFieldsValue.put(allCachedFields.get(i), rs.getObject(allCachedFields.get(i).getName()));
-                }
-            }
-            for (int i = 0; i < allCachedFieldsValue.size(); i++) {
-                entity = (T) newInstance((Class<T>) allCachedFieldsValue.get(allCachedFields.get(i)));
-            }
-            return Optional.of(entity);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
-
-    public List<User> getAllUsers() {
-        List<User> result = new ArrayList<>();
-        try (ResultSet rs = dataSource.getStatement().executeQuery("select * from users")) {
-            while (rs.next() != false) {
-                result.add(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    public List<T> findAll() {
-        List<T> result = new ArrayList<>();
-        try {
-            ResultSet rs = psSelectId.executeQuery();
-            while (rs.next() != false) {
-                result.add(new User(rs.getLong("id"), rs.getString("login"), rs.getString("password"), rs.getString("nickname")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Collections.unmodifiableList(result);
-    }
-
     private void prepareSelectId(Class cls) {
         if (!cls.isAnnotationPresent(RepositoryTable.class)) {
             throw new ORMException("Класс не предназначен для работы с репозиторием, не хватает аннотации @RepositoryTable");
@@ -190,6 +163,35 @@ public class AbstractRepository<T> {
             psSelectAll = dataSource.getConnection().prepareStatement(query.toString());
         } catch (SQLException e) {
             throw new ORMException("Не удалось выполнить всю выборку для класса " + cls.getName());
+        }
+    }
+    private void prepareUpdate(Class cls) {
+        if (!cls.isAnnotationPresent(RepositoryTable.class)) {
+            throw new ORMException("Класс не предназначен для создания репозитория, не хватает аннотации @RepositoryTable");
+        }
+        String tableName = ((RepositoryTable) cls.getAnnotation(RepositoryTable.class)).title();
+        StringBuilder query = new StringBuilder("update ");
+        query.append(tableName).append(" set (");
+        // 'update users set ('
+        for (Field f : cachedFieldsNoId) {
+            query.append(f.getName()).append(", ");
+        }
+        // 'update users set (login, password, nickname, '
+        query.setLength(query.length() - 2);
+        query.append(") values (");
+        // 'update users set (login, password, nickname) values ('
+        for (Field f : cachedFieldsNoId) {
+            query.append("?, ");
+        }
+        query.setLength(query.length() - 2);
+        query.append(") where ");
+        // 'update users set (login, password, nickname) values (?, ?, ?) where '
+        query.append(idField.getName()).append(" = ?");
+        // 'update users set (login, password, nickname) values (?, ?, ?) where id = ?'
+        try {
+            psUpdate = dataSource.getConnection().prepareStatement(query.toString());
+        } catch (SQLException e) {
+            throw new ORMException("Не удалось создать запрос на обновление для класса " + cls.getName());
         }
     }
 

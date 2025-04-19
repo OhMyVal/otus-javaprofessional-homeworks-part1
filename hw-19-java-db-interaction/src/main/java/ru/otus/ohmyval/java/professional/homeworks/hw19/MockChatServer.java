@@ -16,14 +16,16 @@ public class MockChatServer {
             dbMigrator.migrate("dbinit.sql");
 
             System.out.println(usersDao.getAllUsers());
-//            usersDao.save(new User(null, "A", "A", "A"));
-//            System.out.println(usersDao.getAllUsers());
+
             AbstractRepository<User> usersRepository = new AbstractRepository<>(dataSource, User.class);
+            usersRepository.save(new User(null, "A", "A", "A"));
             usersRepository.save(new User(null, "B", "B", "B"));
+            usersRepository.save(new User(null, "C", "C", "C"));
 
             System.out.println(usersDao.getAllUsers());
 
-            usersRepository.findById(1L);
+            System.out.println(usersRepository.findById(5L, User.class));
+            System.out.println(usersRepository.findAll(User.class));
 
 //            AuthenticationService authenticationService = new AuthenticationService(usersDao);
 //            UsersStatisticService usersStatisticService = new UsersStatisticService(usersDao);
