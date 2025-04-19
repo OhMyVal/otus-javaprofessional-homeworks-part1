@@ -23,9 +23,10 @@ public class MockChatServer {
             usersRepository.save(new User(null, "C", "C", "C"));
 
             System.out.println(usersDao.getAllUsers());
-
-            System.out.println(usersRepository.findById(5L, User.class));
-            System.out.println(usersRepository.findAll(User.class));
+            usersRepository.update(new User(null, "D", "D", "D"), 2L);
+            System.out.println(usersDao.getAllUsers());
+//            System.out.println(usersRepository.findById(5L, User.class));
+//            System.out.println(usersRepository.findAll(User.class));
 
 //            AuthenticationService authenticationService = new AuthenticationService(usersDao);
 //            UsersStatisticService usersStatisticService = new UsersStatisticService(usersDao);

@@ -2,14 +2,12 @@ package ru.otus.ohmyval.java.professional.homeworks.hw19;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.reflect.Array.newInstance;
 
 public class AbstractRepository<T> {
     private DataSource dataSource;
@@ -27,7 +25,7 @@ public class AbstractRepository<T> {
         this.prepareInsert(cls);
         this.prepareSelectId(cls);
         this.prepareSelectAll(cls);
-//        this.prepareUpdate(cls);
+        this.prepareUpdate(cls);
     }
 
     public void save(T entity) {
@@ -80,6 +78,18 @@ public class AbstractRepository<T> {
             e.printStackTrace();
         }
         return Collections.unmodifiableList(result);
+    }
+
+    public void update(T entity, Long id) {
+        try {
+            for (int i = 0; i < cachedFieldsNoId.size(); i++) {
+                psUpdate.setObject(i + 1,cachedFieldsNoId.get(i).get(entity));
+            }
+            psUpdate.setObject(cachedFieldsNoId.size() + 1, id);
+            psUpdate.executeUpdate();
+        } catch (Exception e) {
+            throw new ORMException("Что-то пошло не так при изменении: " + entity);
+        }
     }
 
     private void prepareInsert(Class cls) {
@@ -171,23 +181,17 @@ public class AbstractRepository<T> {
         }
         String tableName = ((RepositoryTable) cls.getAnnotation(RepositoryTable.class)).title();
         StringBuilder query = new StringBuilder("update ");
-        query.append(tableName).append(" set (");
-        // 'update users set ('
+        query.append(tableName).append(" set ");
+        // 'update users set '
         for (Field f : cachedFieldsNoId) {
-            query.append(f.getName()).append(", ");
+            query.append(f.getName()).append(" = ?, ");
         }
-        // 'update users set (login, password, nickname, '
+        // 'update users set login = ?, password = ?, nickname = ?, '
         query.setLength(query.length() - 2);
-        query.append(") values (");
-        // 'update users set (login, password, nickname) values ('
-        for (Field f : cachedFieldsNoId) {
-            query.append("?, ");
-        }
-        query.setLength(query.length() - 2);
-        query.append(") where ");
-        // 'update users set (login, password, nickname) values (?, ?, ?) where '
+        query.append(" where ");
+        // 'update users set login = ?, password = ?, nickname = ? where '
         query.append(idField.getName()).append(" = ?");
-        // 'update users set (login, password, nickname) values (?, ?, ?) where id = ?'
+        // 'update users set login = ?, password = ?, nickname = ? where id = ?'
         try {
             psUpdate = dataSource.getConnection().prepareStatement(query.toString());
         } catch (SQLException e) {
