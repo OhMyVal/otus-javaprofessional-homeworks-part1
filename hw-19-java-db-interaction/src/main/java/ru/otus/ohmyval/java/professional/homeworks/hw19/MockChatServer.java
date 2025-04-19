@@ -23,17 +23,12 @@ public class MockChatServer {
             usersRepository.save(new User(null, "C", "C", "C"));
 
             System.out.println(usersDao.getAllUsers());
-            usersRepository.update(new User(null, "D", "D", "D"), 2L);
+            usersRepository.deleteById(2L);
+            usersRepository.update(new User(null, "D", "D", "D"), 3L);
             System.out.println(usersDao.getAllUsers());
-//            System.out.println(usersRepository.findById(5L, User.class));
+            System.out.println(usersRepository.findById(5L, User.class));
 //            System.out.println(usersRepository.findAll(User.class));
 
-//            AuthenticationService authenticationService = new AuthenticationService(usersDao);
-//            UsersStatisticService usersStatisticService = new UsersStatisticService(usersDao);
-//            BonusService bonusService = new BonusService(dataSource);
-
-//            authenticationService.register("A", "A", "A");
-            // Основная работа сервера чата
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

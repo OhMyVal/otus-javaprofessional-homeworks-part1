@@ -15,6 +15,7 @@ public class AbstractRepository<T> {
     private PreparedStatement psSelectId;
     private PreparedStatement psSelectAll;
     private PreparedStatement psUpdate;
+    private PreparedStatement psDeleteById;
     private List<Field> cachedFieldsNoId;
     private List<Field> allCachedFields;
     private Field idField;
@@ -26,6 +27,7 @@ public class AbstractRepository<T> {
         this.prepareSelectId(cls);
         this.prepareSelectAll(cls);
         this.prepareUpdate(cls);
+        this.prepareDeleteById(cls);
     }
 
     public void save(T entity) {
@@ -69,7 +71,7 @@ public class AbstractRepository<T> {
             T entity = constructor.newInstance();
             ResultSet rs = psSelectAll.executeQuery();
             while (rs.next() != false) {
-            for (int i = 0; i < allCachedFields.size(); i++) {
+                for (int i = 0; i < allCachedFields.size(); i++) {
                     allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
                 }
                 result.add(entity);
@@ -83,12 +85,22 @@ public class AbstractRepository<T> {
     public void update(T entity, Long id) {
         try {
             for (int i = 0; i < cachedFieldsNoId.size(); i++) {
-                psUpdate.setObject(i + 1,cachedFieldsNoId.get(i).get(entity));
+                psUpdate.setObject(i + 1, cachedFieldsNoId.get(i).get(entity));
             }
             psUpdate.setObject(cachedFieldsNoId.size() + 1, id);
             psUpdate.executeUpdate();
         } catch (Exception e) {
-            throw new ORMException("Что-то пошло не так при изменении: " + entity);
+            throw new ORMException("Что-то пошло не так при изменении по id = : " + id);
+        }
+    }
+
+    public void deleteById(Long id) {
+        try {
+            int paramPosition = 1;
+            psDeleteById.setString(paramPosition, String.valueOf(id));
+            psDeleteById.executeUpdate();
+        } catch (Exception e) {
+            throw new ORMException("Что-то пошло не так при удалении по id = : " + id);
         }
     }
 
@@ -123,9 +135,10 @@ public class AbstractRepository<T> {
         try {
             psInsert = dataSource.getConnection().prepareStatement(query.toString());
         } catch (SQLException e) {
-            throw new ORMException("Не удалось проинициализировать репозиторий для класса " + cls.getName());
+            throw new ORMException("Не удалось создать запрос на добавление для класса " + cls.getName());
         }
     }
+
     private void prepareSelectId(Class cls) {
         if (!cls.isAnnotationPresent(RepositoryTable.class)) {
             throw new ORMException("Класс не предназначен для работы с репозиторием, не хватает аннотации @RepositoryTable");
@@ -175,6 +188,7 @@ public class AbstractRepository<T> {
             throw new ORMException("Не удалось выполнить всю выборку для класса " + cls.getName());
         }
     }
+
     private void prepareUpdate(Class cls) {
         if (!cls.isAnnotationPresent(RepositoryTable.class)) {
             throw new ORMException("Класс не предназначен для создания репозитория, не хватает аннотации @RepositoryTable");
@@ -199,4 +213,20 @@ public class AbstractRepository<T> {
         }
     }
 
+    private void prepareDeleteById(Class cls) {
+        if (!cls.isAnnotationPresent(RepositoryTable.class)) {
+            throw new ORMException("Класс не предназначен для создания репозитория, не хватает аннотации @RepositoryTable");
+        }
+        String tableName = ((RepositoryTable) cls.getAnnotation(RepositoryTable.class)).title();
+        StringBuilder query = new StringBuilder("delete from ");
+        query.append(tableName).append(" where ");
+        // 'delete from users where '
+        query.append(idField.getName()).append(" = ?");
+        // 'delete from users where id = ?'
+        try {
+            psDeleteById = dataSource.getConnection().prepareStatement(query.toString());
+        } catch (SQLException e) {
+            throw new ORMException("Не удалось создать запрос на удаление по id для класса " + cls.getName());
+        }
+    }
 }
