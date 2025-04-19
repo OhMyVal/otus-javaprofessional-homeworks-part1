@@ -19,7 +19,6 @@ public class AbstractRepository<T> {
     private List<Field> cachedFieldsNoId;
     private List<Field> allCachedFields;
     private Field idField;
-//    private Map<Field, Object> allCachedFieldsValue = new HashMap<>();
 
     public AbstractRepository(DataSource dataSource, Class<T> cls) {
         this.dataSource = dataSource;
@@ -51,12 +50,8 @@ public class AbstractRepository<T> {
             if (rs.next() != false) {
                 for (int i = 0; i < allCachedFields.size(); i++) {
                     allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
-//                    allCachedFieldsValue.put(allCachedFields.get(i), rs.getObject(allCachedFields.get(i).getName()));
                 }
             }
-//            for (int i = 0; i < allCachedFields.size(); i++) {
-//                allCachedFields.get(i).set(entity,allCachedFieldsValue.get(allCachedFields.get(i)));
-//            }
             return Optional.of(entity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,9 +63,9 @@ public class AbstractRepository<T> {
         List<T> result = new ArrayList<>();
         try {
             Constructor<T> constructor = cls.getDeclaredConstructor();
-            T entity = constructor.newInstance();
             ResultSet rs = psSelectAll.executeQuery();
             while (rs.next() != false) {
+                T entity = constructor.newInstance();
                 for (int i = 0; i < allCachedFields.size(); i++) {
                     allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
                 }
