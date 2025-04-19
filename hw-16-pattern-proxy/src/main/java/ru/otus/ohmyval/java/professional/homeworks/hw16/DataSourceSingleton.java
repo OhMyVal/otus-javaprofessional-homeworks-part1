@@ -10,9 +10,11 @@ public final class DataSourceSingleton {
     private Connection connection;
     private Statement statement;
     private static final DataSourceSingleton INSTANCE = new DataSourceSingleton();
+
     public static DataSourceSingleton getInstance() {
         return INSTANCE;
     }
+
     public Connection getConnection() {
         return connection;
     }

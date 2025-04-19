@@ -12,6 +12,7 @@ public class ItemsApplication {
 
             ItemsDao itemsDao = new ItemsDao(dataSourceSingleton);
             ItemsService itemsService = new ItemsService(itemsDao);
+            ItemsServiceProxy itemsServiceProxy = new ItemsServiceProxy(dataSourceSingleton, itemsService);
 
             DbMigrator dbMigrator = new DbMigrator(dataSourceSingleton);
             dbMigrator.migrate("dbinit.sql");
@@ -26,6 +27,13 @@ public class ItemsApplication {
             itemsService.saveItems();
             System.out.println(itemsDao.getAllItems());
             itemsService.increasePrice();
+            System.out.println(itemsDao.getAllItems());
+
+            System.out.println();
+
+            itemsServiceProxy.saveItemsTransaction();
+            System.out.println(itemsDao.getAllItems());
+            itemsServiceProxy.increasePriceTransaction();
             System.out.println(itemsDao.getAllItems());
 
         } catch (SQLException e) {
