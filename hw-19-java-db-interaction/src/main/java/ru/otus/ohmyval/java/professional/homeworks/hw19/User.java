@@ -8,7 +8,7 @@ public class User {
     private String login;
     @RepositoryField
     private String password;
-    @RepositoryField
+    @RepositoryField(title = "nick_name")
     private String nickname;
 
     public Long getId() {
