@@ -32,6 +32,9 @@ public class AbstractRepository<T> {
     public void save(T entity) {
         try {
             for (int i = 0; i < cachedFieldsNoId.size(); i++) {
+                if (cachedFieldsNoId.get(i).get(entity) == null) {
+                    throw new ORMException("Одно из полей " + entity + " равно null");
+                }
                 psInsert.setObject(i + 1, cachedFieldsNoId.get(i).get(entity));
             }
             psInsert.executeUpdate();
@@ -41,29 +44,37 @@ public class AbstractRepository<T> {
     }
 
     public Optional<T> findById(Long id, Class<T> cls) {
+        if (id == null) {
+            throw new ORMException("id = null");
+        }
         try {
             Constructor<T> constructor = cls.getDeclaredConstructor();
             T entity = constructor.newInstance();
             int paramPosition = 1;
             psSelectId.setString(paramPosition, String.valueOf(id));
-            ResultSet rs = psSelectId.executeQuery();
-            if (rs.next() != false) {
-                for (int i = 0; i < allCachedFields.size(); i++) {
-                    allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
+            try (ResultSet rs = psSelectId.executeQuery()) {
+                if (rs.next() != false) {
+                    for (int i = 0; i < allCachedFields.size(); i++) {
+                        if (rs.getObject(allCachedFields.get(i).getName()) == null) {
+                            return Optional.empty();
+                        }
+                        allCachedFields.get(i).set(entity, rs.getObject(allCachedFields.get(i).getName()));
+                    }
                 }
+                return Optional.of(entity);
+            } catch (Exception e) {
+                throw new ORMException("Что-то пошло не так при поиске в БД по id: " + id);
             }
-            return Optional.of(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new ORMException("Что-то пошло не так при поиске объекта по id: " + id);
         }
-        return Optional.empty();
+
     }
 
     public List<T> findAll(Class<T> cls) {
         List<T> result = new ArrayList<>();
-        try {
+        try (ResultSet rs = psSelectAll.executeQuery()) {
             Constructor<T> constructor = cls.getDeclaredConstructor();
-            ResultSet rs = psSelectAll.executeQuery();
             while (rs.next() != false) {
                 T entity = constructor.newInstance();
                 for (int i = 0; i < allCachedFields.size(); i++) {
@@ -78,8 +89,14 @@ public class AbstractRepository<T> {
     }
 
     public void update(T entity, Long id) {
+        if (id == null) {
+            throw new ORMException("id = null");
+        }
         try {
             for (int i = 0; i < cachedFieldsNoId.size(); i++) {
+                if (cachedFieldsNoId.get(i).get(entity) == null) {
+                    throw new ORMException("Одно из полей " + entity + " равно null");
+                }
                 psUpdate.setObject(i + 1, cachedFieldsNoId.get(i).get(entity));
             }
             psUpdate.setObject(cachedFieldsNoId.size() + 1, id);
@@ -90,6 +107,9 @@ public class AbstractRepository<T> {
     }
 
     public void deleteById(Long id) {
+        if (id == null) {
+            throw new ORMException("id = null");
+        }
         try {
             int paramPosition = 1;
             psDeleteById.setString(paramPosition, String.valueOf(id));
