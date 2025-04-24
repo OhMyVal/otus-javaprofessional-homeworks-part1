@@ -12,14 +12,28 @@ public class ItemsServiceProxy {
     }
 
     public void saveItemsTransaction() throws SQLException {
-        dataSourceSingleton.getConnection().setAutoCommit(false);
-        itemsService.saveItems();
-        dataSourceSingleton.getConnection().setAutoCommit(true);
+        try {
+            dataSourceSingleton.getConnection().setAutoCommit(false);
+            itemsService.saveItems();
+            dataSourceSingleton.getConnection().setAutoCommit(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dataSourceSingleton.getConnection().rollback();
+            dataSourceSingleton.getConnection().setAutoCommit(true);
+        }
     }
 
     public void increasePriceTransaction() throws SQLException {
-        dataSourceSingleton.getConnection().setAutoCommit(false);
-        itemsService.increasePrice();
-        dataSourceSingleton.getConnection().setAutoCommit(true);
+        try {
+            dataSourceSingleton.getConnection().setAutoCommit(false);
+            itemsService.increasePrice();
+            dataSourceSingleton.getConnection().setAutoCommit(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dataSourceSingleton.getConnection().rollback();
+            dataSourceSingleton.getConnection().setAutoCommit(true);
+        }
     }
 }
