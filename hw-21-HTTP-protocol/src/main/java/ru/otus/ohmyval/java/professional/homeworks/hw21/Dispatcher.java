@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Dispatcher {
+    HttpServer httpServer;
     private Map<String, RequestProcessor> router;
     private RequestProcessor unknownOperationRequestProcessor;
 
-    public Dispatcher() {
+    public Dispatcher(HttpServer httpServer) {
+        this.httpServer = httpServer;
         this.router = new HashMap<>();
         this.router.put("GET /calc", new CalculatorRequestProcessor());
         this.router.put("GET /hello", new HelloWorldRequestProcessor());
@@ -25,5 +27,8 @@ public class Dispatcher {
             return;
         }
         router.get(httpRequest.getRouteKey()).execute(httpRequest, outputStream);
+        if (httpRequest.getRouteKey().equals("GET /shutdown")) {
+            httpServer.serverShutdown();
+        }
     }
 }

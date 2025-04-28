@@ -23,6 +23,7 @@ public class HttpRequest {
     public String getParameter(String key) {
         return parameters.get(key);
     }
+
     public String getBody() {
         return body;
     }
