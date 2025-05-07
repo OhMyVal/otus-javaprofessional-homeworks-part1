@@ -15,6 +15,7 @@ public class HttpServer {
     private Dispatcher dispatcher;
     ExecutorService serv;
     Properties properties;
+    private boolean servIsClosed = false;
 
     public HttpServer(String fileName) {
         this.getProperties(fileName);
@@ -38,7 +39,7 @@ public class HttpServer {
             System.out.println("Сервер запущен на порту: " + port);
             this.dispatcher = new Dispatcher(this);
             System.out.println("Диспетчер проинициализирован");
-            while (true) {
+            while (!servIsClosed) {
                 try {
                     Socket socket = serverSocket.accept();
                     serv.execute(() -> {
@@ -59,7 +60,9 @@ public class HttpServer {
     }
 
     public void serverShutdown() {
+        servIsClosed = true;
         serv.shutdown();
+
     }
 
     private void threadPoolTask(Socket socket) throws IOException {
