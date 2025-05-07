@@ -1,5 +1,6 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw16;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ItemsServiceProxy {
@@ -12,28 +13,32 @@ public class ItemsServiceProxy {
     }
 
     public void saveItemsTransaction() throws SQLException {
+        Connection connection = dataSourceSingleton.getConnection();
         try {
-            dataSourceSingleton.getConnection().setAutoCommit(false);
+            connection.setAutoCommit(false);
             itemsService.saveItems();
-            dataSourceSingleton.getConnection().setAutoCommit(true);
+            connection.commit();
+            connection.setAutoCommit(true);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            dataSourceSingleton.getConnection().rollback();
-            dataSourceSingleton.getConnection().setAutoCommit(true);
+            connection.rollback();
+            connection.setAutoCommit(true);
         }
     }
 
     public void increasePriceTransaction() throws SQLException {
+        Connection connection = dataSourceSingleton.getConnection();
         try {
-            dataSourceSingleton.getConnection().setAutoCommit(false);
+            connection.setAutoCommit(false);
             itemsService.increasePrice();
-            dataSourceSingleton.getConnection().setAutoCommit(true);
+            connection.commit();
+            connection.setAutoCommit(true);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            dataSourceSingleton.getConnection().rollback();
-            dataSourceSingleton.getConnection().setAutoCommit(true);
+            connection.rollback();
+            connection.setAutoCommit(true);
         }
     }
 }
