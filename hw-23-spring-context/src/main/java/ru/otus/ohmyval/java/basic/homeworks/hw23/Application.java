@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 public class Application {
     private static Logger logger = LoggerFactory.getLogger(Application.class);
     public static void main(String[] args) {
-        ProductRepositoryImpl productRepository = new ProductRepositoryImpl();
-        System.out.println(productRepository.getProductList());
-        CartImpl cart = new CartImpl(productRepository);
+        ProductRepository productRepository = new ProductRepositoryImpl();
+        logger.info(productRepository.getProductList().toString());
+        Cart cart = new CartImpl(productRepository);
         cart.addProductById(2);
         cart.addProductById(2);
         cart.addProductById(5);
@@ -18,7 +18,6 @@ public class Application {
         cart.deleteProductById(2);
         cart.deleteProductById(1);
         cart.deleteProductById(22);
-        System.out.println(cart.getCart());
-
+        logger.info(cart.getCart().toString());
     }
 }

@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ProductRepositoryImpl {
+public class ProductRepositoryImpl implements ProductRepository{
     private static Logger logger = LoggerFactory.getLogger(ProductRepositoryImpl.class);
     private List<Product> productList;
 
+    @Override
     public List<Product> getProductList() {
         logger.info("Полный список продуктов");
         return productList;
@@ -25,6 +26,7 @@ public class ProductRepositoryImpl {
         logger.info("Создали новый список продуктов");
     }
 
+    @Override
     public Product getProductById(int id) {
         for (int i = 0; i < productList.size(); i++) {
             if (productList.get(i).getId() == id) {

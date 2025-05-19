@@ -7,22 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CartImpl {
+public class CartImpl implements Cart{
     private static Logger logger = LoggerFactory.getLogger(CartImpl.class);
-    private ProductRepositoryImpl productRepository;
+    private ProductRepository productRepository;
     private List<Product> cart;
 
+    @Override
     public List<Product> getCart() {
         return cart;
     }
 
-    public CartImpl(ProductRepositoryImpl productRepository) {
+    public CartImpl(ProductRepository productRepository) {
         List<Product> cart = new ArrayList<>();
         this.cart = cart;
         this.productRepository = productRepository;
         logger.info("Создали новую корзину");
     }
 
+    @Override
     public List<Product> addProductById(int id) {
         if (productRepository.getProductById(id) == null) {
             logger.info("В ProductRepository нет продукта с id = " + id);
@@ -37,6 +39,7 @@ public class CartImpl {
         return cart;
     }
 
+    @Override
     public List<Product> deleteProductById(int id) {
         if (productRepository.getProductById(id) == null) {
             logger.info("В ProductRepository нет продукта с id = " + id);
