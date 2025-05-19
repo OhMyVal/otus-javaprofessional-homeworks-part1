@@ -1,13 +1,17 @@
-package ru.otus.ohmyval.java.basic.homeworks.hw23;
+package ru.otus.ohmyval.java.basic.homeworks.hw23.sevices.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import ru.otus.ohmyval.java.basic.homeworks.hw23.Product;
+import ru.otus.ohmyval.java.basic.homeworks.hw23.sevices.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ProductRepositoryImpl implements ProductRepository{
+@Component
+public class ProductRepositoryImpl implements ProductRepository {
     private static Logger logger = LoggerFactory.getLogger(ProductRepositoryImpl.class);
     private List<Product> productList;
 
@@ -24,6 +28,7 @@ public class ProductRepositoryImpl implements ProductRepository{
         }
         this.productList = productList;
         logger.info("Создали новый список продуктов");
+        logger.info(getProductList().toString());
     }
 
     @Override

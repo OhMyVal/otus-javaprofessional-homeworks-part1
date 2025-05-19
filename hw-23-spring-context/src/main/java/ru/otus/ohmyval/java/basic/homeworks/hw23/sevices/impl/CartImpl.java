@@ -1,13 +1,16 @@
-package ru.otus.ohmyval.java.basic.homeworks.hw23;
+package ru.otus.ohmyval.java.basic.homeworks.hw23.sevices.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.ohmyval.java.basic.homeworks.hw23.Product;
+import ru.otus.ohmyval.java.basic.homeworks.hw23.sevices.Cart;
+import ru.otus.ohmyval.java.basic.homeworks.hw23.sevices.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class CartImpl implements Cart{
+public class CartImpl implements Cart {
     private static Logger logger = LoggerFactory.getLogger(CartImpl.class);
     private ProductRepository productRepository;
     private List<Product> cart;
