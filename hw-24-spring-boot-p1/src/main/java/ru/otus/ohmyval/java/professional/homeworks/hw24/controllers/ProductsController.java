@@ -1,8 +1,8 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw24.controllers;
 
-import hw24.dtos.ProductDto;
-import hw24.entities.Product;
-import hw24.services.ProductsService;
+import ru.otus.ohmyval.java.professional.homeworks.hw24.dtos.ProductDto;
+import ru.otus.ohmyval.java.professional.homeworks.hw24.entities.Product;
+import ru.otus.ohmyval.java.professional.homeworks.hw24.services.ProductsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
