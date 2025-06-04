@@ -11,21 +11,26 @@ public class MockChatServer {
             dataSource.connect();
 
             UsersDao usersDao = new UsersDao(dataSource);
-            usersDao.init();
-            System.out.println(usersDao.getAllUsers());
-//            usersDao.save(new User(null, "A", "A", "A"));
-//            System.out.println(usersDao.getAllUsers());
+
+            DbMigrator dbMigrator = new DbMigrator(dataSource);
+            dbMigrator.migrate("dbinit.sql");
+
             AbstractRepository<User> usersRepository = new AbstractRepository<>(dataSource, User.class);
+
+            System.out.println(usersRepository.findAll(User.class));
+
+            usersRepository.save(new User(null, "A", "A", "A"));
             usersRepository.save(new User(null, "B", "B", "B"));
-            System.out.println(usersDao.getAllUsers());
+            usersRepository.save(new User(null, "C", "C", "C"));
 
-//            AuthenticationService authenticationService = new AuthenticationService(usersDao);
-//            UsersStatisticService usersStatisticService = new UsersStatisticService(usersDao);
-//            BonusService bonusService = new BonusService(dataSource);
-//            bonusService.init();
+            System.out.println(usersRepository.findAll(User.class));
 
-//            authenticationService.register("A", "A", "A");
-            // Основная работа сервера чата
+            System.out.println(usersRepository.findById(3L, User.class));
+            usersRepository.deleteById(2L);
+            usersRepository.update(new User(null, "D", "D", "D"), 3L);
+
+            System.out.println(usersRepository.findAll(User.class));
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
