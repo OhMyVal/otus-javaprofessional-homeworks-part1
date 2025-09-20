@@ -1,7 +1,7 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw26.entities;
 
-import jakarta.persistence.*;
 
+import javax.persistence.*;
 import java.util.List;
 
 
@@ -17,7 +17,7 @@ public class Product {
     private String title;
 
    @Column(name="price")
-    private String price;
+    private int price;
 
     @ManyToMany
     @JoinTable(
@@ -43,11 +43,11 @@ public class Product {
         this.title = title;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

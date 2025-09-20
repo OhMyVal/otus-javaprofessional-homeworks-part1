@@ -1,6 +1,6 @@
 package ru.otus.ohmyval.java.professional.homeworks.hw26.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.util.List;
 
