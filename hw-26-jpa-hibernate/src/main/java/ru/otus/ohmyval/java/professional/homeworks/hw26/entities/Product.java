@@ -16,7 +16,7 @@ public class Product {
     @Column(name = "title")
     private String title;
 
-   @Column(name="price")
+    @Column(name = "price")
     private int price;
 
     @ManyToMany
